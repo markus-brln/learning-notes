@@ -6,9 +6,9 @@ tutorials, how-to guides, explanations, and reference.
 
 The system with the 4 documentation types can be retro-fitted to existing documentation technology and structure. It
 just helps make a distinction between kinds of documentation, for example when how-to guides are mixed with explanations
-which I've seen a lot.
+which I've seen a lot. I doesn't mean that you have to restructure existing documentation.
 
-## How we interpret the 4 types of documentation
+## How I interpret the 4 types of documentation
 
 - **Tutorials** are step-by-step guides to help users learn a new skill or tool without a specific application. No
   prior knowledge is assumed. We usually do assume our colleagues to be knowledgeable/for them to follow tutorials by
@@ -23,6 +23,6 @@ which I've seen a lot.
 
 ## Additional guidelines that I find useful
 
-- Non-explanations _may_ link to each other and _should_ link to explanations serving as a single source of truth how a
+- Non-explanations _may_ link to each other and _must_ link to explanations serving as a single source of truth how a
   system works
 - Contents of non-explanations _may_ repeat/summarize parts of the explanations
