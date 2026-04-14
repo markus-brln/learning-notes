@@ -1,13 +1,13 @@
-SRE
+# Site Reliability Engineering
 
 ### Chapter 1
 
 - Dev and ops speaking different languages, different targets (deploy changes as soon as possible, no changes to keep
   things stable)
-  - How to make this difference smaller at my company?
-  - How to make developers take ownership of their operational problems like failing pods? Is it even feasible to have
-    them on-call or sth? If stuff breaks devops will have to fix it anyway, maybe not familiar with the team's
-    kubernetes setup and special hacks to make it work
+    - How to make this difference smaller at my company?
+    - How to make developers take ownership of their operational problems like failing pods? Is it even feasible to have
+      them on-call or sth? If stuff breaks devops will have to fix it anyway, maybe not familiar with the team's
+      kubernetes setup and special hacks to make it work
 - 100% availability shouldn't be the goal, consider error budget (product question), with that mindset outages are a
   natural part of progress, managed rather than feared. End users on a 99% reliable phone won't notice the difference
   between 99.9% and 99.99% uptime
@@ -28,16 +28,16 @@ SRE
 
 - Don't over-achieve beyond your SLOs, controlled outages/no lower latency under light load to prevent over-reliance on
   a service/system
-  - Should really take nodes offline randomly
+    - Should really take nodes offline randomly
 - Stricter SLO internally than externally to be able to respond quicker before externals will notice
 
 ### Chapter 5
 
 - Eliminate toil
-  - Manual and repetitive tasks are often toil. You do need human judgement to do it, but that may just mean that the
-    underlying system is poorly designed (e.g. we have to do some magic with galera to make the whole thing work, we
-    could have 2 dbs to switch in between or whatever other solution)
-  - Solve e.g. by automating user provisioning
+    - Manual and repetitive tasks are often toil. You do need human judgement to do it, but that may just mean that the
+      underlying system is poorly designed (e.g. we have to do some magic with galera to make the whole thing work, we
+      could have 2 dbs to switch in between or whatever other solution)
+    - Solve e.g. by automating user provisioning
 - Writing documentation is a way for me to reduce toil. Then devs don't have as many questions. Probably already
   saved me more hours than I spent documenting.
 
@@ -56,3 +56,57 @@ SRE
 - Escalate if you think your team can't clean up technical debt, and it's piling up
 - A hit to availability may be worth it, turning off noisy alerts, thereby reducing distraction by them and fixing
   things long-term
+
+### Chapter 7
+
+- Automation is not only about time saving. It's also about consitency e.g. Adding users the same way every time, and
+  faster reactions and repairs, and maybe developing a whole platform/product around this automation
+- Choose software that itself is automating its business, e.g. MariaDB Galera
+- On top of writing tests, you can write scripts that fix the code/configuration automatically and test again -> comes
+  with it's own set of problems
+- Manual -> automatic -> autonomous (last stage requires Introspection, something that Borg and Kubernetes do)
+
+### Chapters 8+9 not that interesting for me
+
+### Chapter 10
+
+- Black box vs white box monitoring -> I think we need more black box monitoring
+
+### Chapter 11
+
+- Important when on-call: clear escalation paths, incident management procedures, blameless post-mortems -> we're
+  lacking the first 2 I think
+- One incident should not create more than one alert -> confusing
+- If a system isn't stable and triggers too many pages, then on-call could be handed over to developers until the system
+  is more reliable
+
+### Chapter 12
+
+- Document negative results of experiments (going with one technology vs another), e.g. Project post-mortems ->
+  something we could do for the new stack
+
+### Chapter 13
+
+- Nice to read their incidents - maybe good idea to find incidents to read online
+- Proactive testing and breaking things, better when everyone is available than in the middle of the night. Again, we
+  should take a node down at some point
+
+### Chapter 14
+
+- Focus on stopping the bleeding, then finding the root cause
+
+### Chapter 15
+
+- We're not doing that much with our post mortems, only discussing within the team. Maybe need more communication?
+- My idea: Show incidents to new team members
+
+### Chapter 16
+
+- System to track outages: small outages that don't trigger an incident and fix but may occur frequently -> system
+  aggregates the data and helps determine if action is still necessary
+
+### Chapter 17
+
+- Didn't really do regression tests so far in my programming career, I think...
+- Starting to make tests in a code base without tests: focus on business critical components and APIs that other teams
+  use

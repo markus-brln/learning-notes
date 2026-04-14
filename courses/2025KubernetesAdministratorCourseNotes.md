@@ -1,0 +1,55 @@
+# Kubernetes Administrator Course Notes
+
+I did [this course](https://www.udemy.com/course/certified-kubernetes-administrator-with-practice-tests/) on udemy in Q1 2025, here are my notes:
+
+- use `kubectl ... --dry-run=client -o yaml` to see what kubectl would apply, e.g. when creating something from the command line without a file
+- `ReplicaSet` replaces deprecated `ReplicationController`
+- `ReplicaSet` and `Deployment` etc need `selector.matchLabels` because they can also take ownership of pods not created during their own creation
+- use `kubectl explain` to find api versions
+- `my-service.my-namespace.svc.cluster.local` -> `svc` == `Service` subdomain, `cluster.local` self-explanatory
+- making Resource quotas is easy
+- `kubectl apply -f .` -> apply all config files in this (or path to) directory
+- You can manually schedule pods using the `nodeName` field (but can't change it on the fly, only re-create)
+- `kubectl ... --watch` instead of `watch kubectl ...`
+- `kubectl get pods --selector label=label-value,label-value2` 
+- taint on node, toleration on pod, 3 different taints: NoSchedule (no new pods), PreferNoSchedule, NoExecute (evict existing pods as well)
+- tolerations vs affinity:
+  - tolerations refer to the node allowing pods
+  - affinity refers to what the pod wants
+- `kubectl taint node <node-name> <taint>-` (minus) removes taint
+- `nodeSelector` == more basic version of node affinity
+- node affinity not really needed if all nodes have the same properties
+- preferred vs required `DuringSchedulingIgnoredDuringExecution`
+  - only affect scheduling, no eviction in these two
+- resources: `1G` != `1Gi` (the latter is the power of 2)
+- CPU: just max out, memory: OOM killed
+- LimitRange that can be created per namespace to set default resource limits for each container
+  - only apply to new pods
+- ResourceQuota per namespace
+- Static pods via manifest files on the server to deploy e.g. control plane components without needing a kubeapi server, kubelet can deploy them by itself
+  - e.g. get them like this because their name is post fixed with the node name: `kstaging get pods -A | grep k8s-staging`
+- you can make a custom scheduler
+- scheduling queue -> filter based on which nodes can run the pod (enough resources etc) -> scoring on different things like resources, images already on node -> binding phase
+  - all have pre and post phases
+  - everything is very configurable, you can add plugins to change the behavior
+- Admission controllers
+  - e.g. check allowed config like image name, change the request itself, or perform additional operations (check if namespace exists, add the default storage class, force always pull images)
+  - our operators have validating/mutating webhook configs which point to the operators' APIs for that
+- Seriously consider multi-container pods (shared networking (localhost), shared storage) before creating an extra service
+- VPA scaling for stateful workloads, HPA for stateless services
+- backup kubernetes with `etcdctl snapshot save snapshot.db` and restore with `etcdctl snapshot restore`
+- Setting up TLS certs for kubernetes components requires a lot of certs, luckily our k8s distros take care of it
+- PVs bound to PVCs even if PV is too big. If you don't have a CSI, you need to create PVs manually
+- Networking
+  - wished I would have followed the lectures on networking way earlier: https://www.udemy.com/course/certified-kubernetes-administrator-with-practice-tests/learn/lecture/14296138#overview
+  - DNS server became necessary because it's inconvenient to maintain /etc/hosts file on each host to resolve other hosts
+  - `cat /etc/resolv.conf` to see what nameserver you're configured to use
+  - `cat /etc/hosts` takes precedence over asking the nameserver how to resolve a domain
+    - `nslookup` and `dig` skip `/etc/hosts` while `ping` doesn't
+  - `sudo iptables -S` to get firewall rules (including NAT config (I set this for my website via the router's UI such that any traffic on certain ports to my router's IP would be forwarded with the source IP to my laptop (acting as a NAT Gateway) and the laptop response's source IP is also rewritten to the router's IP - and on my laptop I have metallb I think that forwards that traffic to the microk8s node))
+  - a bridge (like a docker bridge network) is like an interface to the host, but like a switch to the namespaces or containers within the host
+    - docker container always gets its own network namespace
+  - kubernetes uses CNI plugins to connect containers
+    - docker run on none-network and then invokes the CNI plugins to set up networking for the container
+  -  [Gateway API](https://kubernetes.io/docs/concepts/services-networking/gateway/) as an improvement upon Ingress, better for multi-tenancy
+- control plane high availability setup: requires loadbalancer in front of kube API, they do leader election to avoid double work
